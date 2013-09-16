@@ -15,4 +15,6 @@ def get_local(mode):
     elif not parser.has_section(mode):
         mode = 'DEFAULT'
 
-    return parser.get(mode, 'local')
+    cfgvalue = parser.get(mode, 'local')
+    print cfgvalue
+    return cfgvalue

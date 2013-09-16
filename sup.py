@@ -90,7 +90,7 @@ def main():
     parser.add_argument("-vv", help="very verbose",  action="store_true")
     parser.add_argument("-t", action='store', dest='timeout', default=1, help='main timeout')
     parser.add_argument('-i', action='store', dest='interval',
-                    default=2,
+                    default=1,
                     help='interval between polls',
                     )
 
