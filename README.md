@@ -4,7 +4,7 @@ sup
 sup is a tool to be used like ping but with more protocol awareness.
 
 <pre><code>
-like ping but for protocols
+like ping but for higher up the stack
 
 positional arguments:
   site         url or ip of site to manage
@@ -23,21 +23,21 @@ optional arguments:
 
 TCP Ping (default port is 22):
 
-    sup webdos
+    sup host.com
 
-    02.10.29 webdos:22 ok 0.0 ms
-    02.10.31 webdos:22 ok 0.0 ms
-    02.10.33 webdos:22 ok 0.0 ms
-    02.10.35 webdos:22 ok 0.0 ms
+    02.10.29 host.com:22 ok 0.0 ms
+    02.10.31 host.com:22 ok 0.0 ms
+    02.10.33 host.com:22 ok 0.0 ms
+    02.10.35 host.com:22 ok 0.0 ms
 
 TCP Ping non-defaul port:
 
-    sup webdos:80
+    sup host.com:80
 
-    02.10.29 webdos:80 ok 0.0 ms
-    02.10.31 webdos:80 ok 0.0 ms
-    02.10.33 webdos:80 ok 0.0 ms
-    02.10.35 webdos:80 ok 0.0 ms
+    02.10.29 host.com:80 ok 0.0 ms
+    02.10.31 host.com:80 ok 0.0 ms
+    02.10.33 host.com:80 ok 0.0 ms
+    02.10.35 host.com:80 ok 0.0 ms
 
 Hit 'Enter' to exit with stats at any time:
 
@@ -46,13 +46,13 @@ Hit 'Enter' to exit with stats at any time:
 
 sup can do 'ping' like behavior for:
 
-* tcp
-* http
-* smtp
-* ntp
-* memcached
-* icmp
-* redis
+    * tcp
+    * http
+    * smtp
+    * ntp
+    * memcached
+    * icmp
+    * redis
 
 'Pinging' Redis:
 
@@ -78,19 +78,49 @@ sup can notify you of state changes.
 
 Run sup tcping in background with 'broadcast' enabled:
 
-    ./sup.py webdos -b &
+    ./sup.py host.com -b &
     [1] 25420
 
-Now when that host state changes it is broadcast:
+Now when that host.com state changes it is broadcast:
 
-    02.14.46 webdos:22 ok 0.0 ms
-    02.14.48 webdos:22 ok 0.0 ms
-    02.14.50 webdos:22 ok 0.0 ms
-    02.14.52 webdos:22 ok 0.0 ms
+    02.14.46 host.com:22 ok 0.0 ms
+    02.14.48 host.com:22 ok 0.0 ms
+    02.14.50 host.com:22 ok 0.0 ms
+    02.14.52 host.com:22 ok 0.0 ms
     Broadcast Message from root@idle34                                             
             (/dev/pts/0) at 14:14 ...                                              
                                                                                
-    02.14.54 webdos:22 timeout 0.0 ms
+    02.14.54 host.com:22 timeout 0.0 ms
 
 sup can also do a GUI popup if X is installed:
-    ./sup.py webdos -p &
+    ./sup.py host.com -p &
+
+
+Sup can take configuration directives from an ini file.
+
+/home/yourname/.sup.ini
+
+[default]
+localnet  - define ip's to treat as 'local'.  this is pattern matching not IP strict.
+remotemon - define the default poller to use for nonlocal resources
+localmon - define the default poller to use for local resources
+
+Examples:
+
+    [default]
+    localnet = 192.,10. #all 192 and 10 addresses use local monitor
+    remotemon = http
+    localmon = tcp
+
+[subs]
+<alias> = fqdn
+
+Example:
+
+    [subs]
+    google = www.google.com
+    l = localhost
+
+    ./sup.py l
+    05.06.58 localhost:22 failed 0.265 ms
+    05.06.59 localhost:22 failed 0.792 ms

@@ -46,10 +46,13 @@ def is_ip_included(cidr, ip):
 def is_local(ip, mode=None):
     if ip.startswith('127'):
         return True
+
     local_nets = get_config_key(mode, 'localnet')
-    if ',' not in local_nets and ip.startswith(local_nets):
-            return True
+    if not local_nets:
+        return False
+    elif ',' not in local_nets and ip.startswith(local_nets):
+        return True
     elif any(map(lambda s: ip.startswith(s), local_nets.split(','))):
-            return True
+        return True
     else:
-            return False
+        return False
