@@ -1,8 +1,7 @@
 import os
 import struct
 import socket
-from config import get_local
-
+from config import get_config_key
 
 def num2ip(num):
     """
@@ -47,10 +46,10 @@ def is_ip_included(cidr, ip):
 def is_local(ip, mode=None):
     if ip.startswith('127'):
         return True
-    return is_ip_included(get_local(mode=mode), ip)
-
-#for section_name in parser.sections():
-#    print 'Section:', section_name
-#    print '  Options:', parser.options(section_name)
-#    for name, value in parser.items(section_name):
-#        print '  %s = %s' % (name, value)
+    local_nets = get_config_key(mode, localnet)
+    if ',' not in local_nets and ip.startswith(local_nets):
+            return True
+    elif any(map(lambda s: ip.startswith(s), local_nets.split(','))):
+            return True
+    else:
+            return False

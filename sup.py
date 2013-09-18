@@ -8,10 +8,10 @@ import time
 import socket
 import json
 import inspect
-#from ping import Ping
 import thread
 import os
 from addr import is_local
+from config import get_config_key
 from monitor import *
 
 try:
@@ -95,7 +95,7 @@ def main():
                     )
 
     parser.add_argument('-m', action='store', dest='mode',
-                    default='tcping',
+                    default='tcp',
                     help='Check type to use.  \nAvailable: %s\n' %
                     '\r\n'.join([m.split('_')[1] for m in sup_dict.keys() if m.startswith('sup_')]))
 
@@ -128,15 +128,25 @@ def main():
     except:
         helpdie('could not translate hostname')
 
+    if args.vv:
+        args.v = True
 
-    print is_local(ip, args.mode)
+    #check for user polling preferrences for local and remote hosts
+    if is_local(ip, args.mode):
+        lpreferred = get_config_key(args.mode, 'localmon')
+        if lpreferred:
+            args.mode = lpreferred
+    else:
+        rpreferred = get_config_key(args.mode, 'remotemon')
+        if rpreferred:
+            args.mode = rpreferred
+
+    if args.v:
+        print args.mode
 
     if gui == False and args.p:
         print 'popups enabled but no GUI -- disabling'
         args.p = False
-
-    if args.vv:
-        print args
 
     attempt = 0
     state = ''

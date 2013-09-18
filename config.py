@@ -1,20 +1,24 @@
 import os
 import struct
 import socket
-from ConfigParser import SafeConfigParser
-home = os.path.expanduser('~')
-print os.path.join(home, '.sup.ini')
+import ConfigParser
 
-parser = SafeConfigParser()
+home = os.path.expanduser('~')
+#print os.path.join(home, '.sup.ini')
+parser = ConfigParser.SafeConfigParser()
 parser.read('/Users/rush/.sup.ini')
 
-def get_local(mode):
+def get_config_key(mode, key, strict=False):
     if mode is None:
         if parser.has_section('DEFAULT'):
             mode = 'DEFAULT'
     elif not parser.has_section(mode):
         mode = 'DEFAULT'
 
-    cfgvalue = parser.get(mode, 'local')
-    print cfgvalue
+    try:
+        cfgvalue = parser.get(mode, key)
+    except ConfigParser.NoOptionError:
+        if strict:
+            raise
+        cfgvalue = None
     return cfgvalue

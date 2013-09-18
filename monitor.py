@@ -80,7 +80,7 @@ class supped(object):
 class sup_ntp(supped):
 
     def poll(self):
-        self.port = self.port if self.port else 123
+        self.port = self.port or 123
         # File: Ntpclient.py
         #http://stackoverflow.com/questions/12664295/ntp-client-in-python
         from socket import AF_INET, SOCK_DGRAM
@@ -103,7 +103,7 @@ class sup_ntp(supped):
 class sup_http(supped):
 
     def poll(self):
-        self.port = self.port if self.port else 80
+        self.port = self.port or 80
         try:
             conn = httplib.HTTPConnection(self.ip, self.port)
             conn.request("HEAD", "/")
@@ -131,7 +131,7 @@ class sup_http(supped):
 class sup_smtp(supped):
 
     def poll(self):
-        self.port = self.port if self.port else 25
+        self.port = self.port or 25
         import socket
         try:
             mark = 'ESMTP'
@@ -152,7 +152,7 @@ class sup_redis(supped):
 
     def poll(self):
         import telnetlib
-        self.port = self.port if self.port else 6379
+        self.port = self.port or 6379
         mark = 'PONG'
         try:
             tn = telnetlib.Telnet(self.ip, self.port)
@@ -173,7 +173,7 @@ class sup_memcached(supped):
 
     def poll(self):
         import telnetlib
-        self.port = self.port if self.port else 11211
+        self.port = self.port or 11211
         mark = 'accepting_conns 1'
         try:
             tn = telnetlib.Telnet(self.ip, self.port)
@@ -188,25 +188,6 @@ class sup_memcached(supped):
             return status
         except socket.error:
             return None
-
-class sup_tcping(supped):
-
-    def poll(self):
-        self.port = self.port if self.port else 22
-        import socket
-        try:
-            sock = socket.socket()
-            sock.connect((self.ip, self.port))
-            if isinstance(sock, socket._socketobject):
-                status = 'ok'
-            else:
-                status = 'failed'
-            return status
-        except socket.error:
-            return None
-        finally:
-            sock.close()
-
 
 
 class sup_icmp(supped):
@@ -223,7 +204,7 @@ class sup_icmp(supped):
 class sup_tcp(supped):
 
     def poll(self):
-        self.port = self.port if self.port else 22
+        self.port = self.port or 22
         import socket
         try:
             sock = socket.socket()
@@ -234,7 +215,7 @@ class sup_tcp(supped):
                 status = 'failed'
             return status
         except socket.error:
-            return None
+            return 'failed'
         finally:
             sock.close()
 
