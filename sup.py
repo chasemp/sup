@@ -26,7 +26,6 @@ def popup(msg):
     root.withdraw()
     tkMessageBox.showinfo(sys.argv[0], str(msg))
 
-
 def runBash(cmd):
     p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     out = p.stdout.read().strip()
@@ -81,6 +80,7 @@ def find_monitors(module):
 
 def main():
 
+    default_poller = 'tcp'
     sup_dict = find_monitors(sys.modules[__name__])
     parser = argparse.ArgumentParser(description='like ping but for protocols')
     parser.add_argument("site",nargs=1, help='url or ip of site to manage')
@@ -95,7 +95,7 @@ def main():
                     )
 
     parser.add_argument('-m', action='store', dest='mode',
-                    default='tcp',
+                    default=default_poller,
                     help='Check type to use.  \nAvailable: %s\n' %
                     '\r\n'.join([m.split('_')[1] for m in sup_dict.keys() if m.startswith('sup_')]))
 
@@ -123,6 +123,12 @@ def main():
         except Exception, e:
             helpdie(str(e))
 
+    sub = get_config_key('subs', site)
+    if sub:
+        if args.v:
+            print 'translating %s => %s' % (site, sub)
+        site = sub
+
     try:
         ip = socket.gethostbyname(site)
     except:
@@ -132,24 +138,23 @@ def main():
         args.v = True
 
     #check for user polling preferrences for local and remote hosts
-    if is_local(ip, args.mode):
+    if is_local(ip, args.mode) and args.mode == default_poller:
         lpreferred = get_config_key(args.mode, 'localmon')
         if lpreferred:
             args.mode = lpreferred
+            if args.vv:
+                print 'mode changed to %s' % (args.mode)
     else:
         rpreferred = get_config_key(args.mode, 'remotemon')
         if rpreferred:
             args.mode = rpreferred
-
-    if args.v:
-        print args.mode
+            if args.vv:
+                print 'mode changed to %s' % (args.mode)
 
     if gui == False and args.p:
         print 'popups enabled but no GUI -- disabling'
         args.p = False
 
-    attempt = 0
-    state = ''
     mode = "sup_%s" % args.mode
     if mode in sup_dict:
         suping = sup_dict[mode]
@@ -170,7 +175,8 @@ def main():
 
     begin = time.time()
     poll_durations = []
-
+    attempt = 0
+    state = ''
     while 1:
         if L:
             print 'avg: %s Max: %s Min: %s' % (sum(poll_durations)/len(poll_durations),

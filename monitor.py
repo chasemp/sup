@@ -61,11 +61,6 @@ class supped(object):
         self.vv_out = None
 
     def run(self):
-
-        if self.v or self.vv:
-            verbose_intro = "Polling %s on port %s with timeout %s\n"
-            print verbose_intro % (self.__class__.__name__.split('_')[1],
-                                                                self.port, self.timeout)
         with Timer() as t:
             result, to = ftimeout(self.poll, timeout_duration=self.timeout)
         if to:
