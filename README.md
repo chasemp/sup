@@ -72,9 +72,7 @@ sup can do 'ping' like behavior for:
     02.13.36 10.0.14.41:11211 ok 0.0 ms
     02.13.38 10.0.14.41:11211 ok 0.0 ms
 
-sup is really useful for ongoing 'pinging' while doing mainenance in the background.
-
-sup can notify you of state changes.
+#### sup can notify you of state changes.
 
 Run sup tcping in background with 'broadcast' enabled:
 
@@ -96,11 +94,13 @@ sup can also do a GUI popup if X is installed:
     ./sup.py host.com -p &
 
 
-Sup can take configuration directives from an ini file.
+#### sup can take configuration directives from an ini file.
 
-/home/yourname/.sup.ini
+Config file location:
 
-[default]
+    /home/yourname/.sup.ini
+
+default section
 localnet  - define ip's to treat as 'local'.  this is pattern matching not IP strict.
 remotemon - define the default poller to use for nonlocal resources
 localmon - define the default poller to use for local resources
@@ -109,11 +109,11 @@ Examples:
 
     [default]
     localnet = 192.,10. #all 192 and 10 addresses use local monitor
-    remotemon = http
-    localmon = tcp
+    localmon = tcp #all local use this monitor
+    remotemon = http #all non-local use this monitor
 
-[subs]
-<alias> = fqdn
+substitution section
+alias - define an alias to be translated instead of a a full hostname
 
 Example:
 
@@ -124,3 +124,7 @@ Example:
     ./sup.py l
     05.06.58 localhost:22 failed 0.265 ms
     05.06.59 localhost:22 failed 0.792 ms
+
+    ./sup.py google
+    05.21.27 www.google.com:80 200 OK 5.664 ms
+    05.21.29 www.google.com:80 200 OK 6.117 ms
