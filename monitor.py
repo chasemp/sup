@@ -1,18 +1,4 @@
-#!/usr/bin/env python
-import argparse
-import sys
-import httplib
-import datetime
-import subprocess
 import time
-import socket
-import json
-import inspect
-from ping import Ping
-import thread
-import os
-from addr import is_local
-
 
 class Timer:
     def __enter__(self):
@@ -98,6 +84,7 @@ class sup_ntp(supped):
 class sup_http(supped):
 
     def poll(self):
+        import httplib
         self.port = self.port or 80
         try:
             conn = httplib.HTTPConnection(self.ip, self.port)
@@ -188,6 +175,7 @@ class sup_memcached(supped):
 class sup_icmp(supped):
 
     def poll(self):
+        from ping import Ping
         import socket
         try:
             p = Ping(self.ip, 1, 55)
@@ -213,11 +201,3 @@ class sup_tcp(supped):
             return 'failed'
         finally:
             sock.close()
-
-def find_monitors(module):
-    import sys
-    sup_functions = {}
-    classes = inspect.getmembers(module, inspect.isclass)
-    for name, obj in classes:
-        sup_functions[name] = obj
-    return sup_functions

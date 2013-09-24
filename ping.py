@@ -2,7 +2,9 @@
 # coding: utf-8
 
 """
-    https://github.com/jedie/python-ping/blob/master/ping.py
+    2013 Chase Pettet Fork of https://github.com/jedie/python-ping/blob/master/ping.py
+
+    _____________________________________________________________________
 
     A pure python ping implementation using raw sockets.
 
@@ -15,6 +17,7 @@
     :homepage: https://github.com/jedie/python-ping/
     :copyleft: 1989-2011 by the python-ping team, see AUTHORS for more details.
     :license: GNU GPL v2, see LICENSE for more details.
+    _____________________________________________________________________
 """
 
 
