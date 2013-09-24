@@ -80,7 +80,6 @@ def find_monitors(module):
 
 def main():
 
-
     def verify_int(number):
         try:
             return int(number)
@@ -167,7 +166,8 @@ def main():
         print 'popups enabled but no GUI -- disabling'
         args.p = False
 
-    mode = "sup_%s" % args.mode
+    final_poller = args.mode or 'tcp'
+    mode = "sup_%s" % final_poller
     if mode in sup_dict:
         suping = sup_dict[mode]
         s = suping(site, port, int(args.timeout))

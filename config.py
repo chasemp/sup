@@ -16,7 +16,7 @@ def get_config_key(mode, key, strict=False):
         mode = 'default'
     try:
         cfgvalue = parser.get(mode, key)
-    except ConfigParser.NoOptionError:
+    except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
         if strict:
             raise
         cfgvalue = None
