@@ -116,10 +116,11 @@ Config file location:
 
     /home/yourname/.sup.ini
 
-default section
-localnet  - define ip's to treat as 'local'.  this is pattern matching not IP strict.
-remotemon - define the default poller to use for nonlocal resources
-localmon - define the default poller to use for local resources
+default section options
+
+    localnet  - define ip's to treat as 'local'.  this is pattern matching not IP strict.
+    remotemon - define the default poller to use for nonlocal resources
+    localmon - define the default poller to use for local resources
 
 Examples:
 
@@ -128,8 +129,9 @@ Examples:
     localmon = tcp #all local use this monitor
     remotemon = http #all non-local use this monitor
 
-substitution section
-alias - define an alias to be translated instead of a a full hostname
+substitution section options
+
+    alias - define an alias to be translated instead of a a full hostname
 
 Example:
 
@@ -146,10 +148,12 @@ Example:
     05.21.29 www.google.com:80 200 OK 6.117 ms
 
 
-poller sections
-port = 80 #set all tcp polling to port 80 by default
+poller section options
+
+    port - set default port for a specific poller
 
 Example:
+
     [tcp]
     port = 80
 
