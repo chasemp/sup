@@ -14,6 +14,12 @@ Tested on:
 <pre><code>
 like ping but for higher up the stack
 
+usage: sup.py [-h] [-p] [-b] [-v] [-f] [-vv] [-c COUNT] [-t TIMEOUT]
+              [-i INTERVAL] [-m MODE]
+              site
+
+like ping but for protocols
+
 positional arguments:
   site         url or ip of site to manage
 
@@ -22,11 +28,13 @@ optional arguments:
   -p           show popups
   -b           broadcast messages
   -v           verbose
+  -f           flood as many requests as possible
   -vv          very verbose
+  -c COUNT     set count
   -t TIMEOUT   main timeout
   -i INTERVAL  interval between polls
-  -m MODE      Check type to use. Available: tcp http smtp ntp tcping
-               memcached icmp redis
+  -m MODE      Check type to use. Available: tcp http smtp ntp memcached icmp
+               redis
 </code></pre>
 
 TCP Ping (default port is 22):
