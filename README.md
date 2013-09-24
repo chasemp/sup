@@ -107,6 +107,7 @@ Now when that host.com state changes it is broadcast:
     02.14.54 host.com:22 timeout 0.0 ms
 
 sup can also do a GUI popup if X is installed:
+
     ./sup.py host.com -p &
 
 #### sup can take configuration directives from an ini file.
