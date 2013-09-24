@@ -14,7 +14,6 @@ def get_config_key(mode, key, strict=False):
             mode = 'default'
     elif not parser.has_section(mode):
         mode = 'default'
-
     try:
         cfgvalue = parser.get(mode, key)
     except ConfigParser.NoOptionError:

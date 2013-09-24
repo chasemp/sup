@@ -80,14 +80,23 @@ def find_monitors(module):
 
 def main():
 
-    default_poller = 'tcp'
+
+    def verify_int(number):
+        try:
+            return int(number)
+        except ValueError, e:
+            helpdie(str(e))
+
+    poller = None
     sup_dict = find_monitors(sys.modules[__name__])
     parser = argparse.ArgumentParser(description='like ping but for protocols')
     parser.add_argument("site",nargs=1, help='url or ip of site to manage')
     parser.add_argument("-p", help="show popups",  action="store_true")
     parser.add_argument("-b", help="broadcast messages",  action="store_true")
     parser.add_argument("-v", help="verbose",  action="store_true")
+    parser.add_argument("-f", help="flood as many requests as possible",  action="store_true")
     parser.add_argument("-vv", help="very verbose",  action="store_true")
+    parser.add_argument("-c", action='store', dest='count', default=0, help='set count')
     parser.add_argument("-t", action='store', dest='timeout', default=1, help='main timeout')
     parser.add_argument('-i', action='store', dest='interval',
                     default=1,
@@ -95,7 +104,7 @@ def main():
                     )
 
     parser.add_argument('-m', action='store', dest='mode',
-                    default=default_poller,
+                    default=poller,
                     help='Check type to use.  \nAvailable: %s\n' %
                     '\r\n'.join([m.split('_')[1] for m in sup_dict.keys() if m.startswith('sup_')]))
 
@@ -108,20 +117,18 @@ def main():
     args = parser.parse_args()
     site = args.site[0]
 
+    if args.vv:
+        args.v = True
+
+    explicitport = False
     if ':' in site:
         site, port = site.split(':')
-        try:
-            port = int(port)
-        except ValueError, e:
-            helpdie(str(e))
+        explicitport = True
     else:
         port = 0
 
     if args.interval:
-        try:
-            interval = int(args.interval)
-        except Exception, e:
-            helpdie(str(e))
+        interval = verify_int(args.interval)
 
     sub = get_config_key('subs', site)
     if sub:
@@ -134,14 +141,10 @@ def main():
     except:
         helpdie('could not translate hostname')
 
-    if args.vv:
-        args.v = True
-
-    print is_local(ip, args.mode)
-
     #check for user polling preferrences for local and remote hosts
-    if is_local(ip, args.mode) and args.mode == default_poller:
-        print 'local host found'
+    if is_local(ip, args.mode) and args.mode == poller:
+        if args.vv:
+          print 'local host found'
         lpreferred = get_config_key(args.mode, 'localmon')
         if lpreferred:
             args.mode = lpreferred
@@ -151,11 +154,14 @@ def main():
         if args.vv:
             print 'remote host found'
         rpreferred = get_config_key(args.mode, 'remotemon')
-        print 'remote preferred', rpreferred
-        if rpreferred and args.mode == default_poller:
+        if rpreferred and args.mode == poller:
             args.mode = rpreferred
             if args.vv:
                 print 'mode changed to %s' % (args.mode)
+
+    if not explicitport:
+        port = get_config_key(args.mode, 'port') or port
+    port = verify_int(port)
 
     if gui == False and args.p:
         print 'popups enabled but no GUI -- disabling'
@@ -183,8 +189,10 @@ def main():
     poll_durations = []
     attempt = 0
     state = ''
+    count = verify_int(args.count)
+
     while 1:
-        if L:
+        if L or attempt == count and count != 0:
             print 'avg: %s Max: %s Min: %s' % (sum(poll_durations)/len(poll_durations),
                                                max(poll_durations),
                                                min(poll_durations))
@@ -217,7 +225,8 @@ def main():
         print msg
         if args.v or args.vv:
             print '---------------------------------------------------'
-        time.sleep(interval)
+        if not args.f:
+            time.sleep(interval)
 
 if __name__ == '__main__':
     try:
