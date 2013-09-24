@@ -10,10 +10,10 @@ parser.read('/Users/rush/.sup.ini')
 
 def get_config_key(mode, key, strict=False):
     if mode is None:
-        if parser.has_section('DEFAULT'):
-            mode = 'DEFAULT'
+        if parser.has_section('default'):
+            mode = 'default'
     elif not parser.has_section(mode):
-        mode = 'DEFAULT'
+        mode = 'default'
 
     try:
         cfgvalue = parser.get(mode, key)

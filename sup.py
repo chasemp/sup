@@ -137,16 +137,22 @@ def main():
     if args.vv:
         args.v = True
 
+    print is_local(ip, args.mode)
+
     #check for user polling preferrences for local and remote hosts
     if is_local(ip, args.mode) and args.mode == default_poller:
+        print 'local host found'
         lpreferred = get_config_key(args.mode, 'localmon')
         if lpreferred:
             args.mode = lpreferred
             if args.vv:
                 print 'mode changed to %s' % (args.mode)
     else:
+        if args.vv:
+            print 'remote host found'
         rpreferred = get_config_key(args.mode, 'remotemon')
-        if rpreferred:
+        print 'remote preferred', rpreferred
+        if rpreferred and args.mode == default_poller:
             args.mode = rpreferred
             if args.vv:
                 print 'mode changed to %s' % (args.mode)
