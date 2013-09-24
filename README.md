@@ -37,6 +37,8 @@ optional arguments:
                redis
 </code></pre>
 
+#### Basic Usage for checking services/hosts
+
 TCP Ping (default port is 22):
 
     sup host.com
@@ -60,7 +62,7 @@ Hit 'Enter' to exit with stats at any time:
     avg: 0.0 Max: 0.0 Min: 0.0
     tcping polled 4 times in 8.0 seconds
 
-sup can do 'ping' like behavior for:
+#### sup can do 'ping' like behavior for:
 
     * tcp
     * http
