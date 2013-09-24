@@ -3,6 +3,14 @@ sup
 
 sup is a tool to be used like ping but with more protocol awareness.
 
+Tested on:
+
+    Python 2.6.6
+    Python 2.7
+
+    Debian GNU/Linux 6.0.7
+    OSX Darwin
+
 <pre><code>
 like ping but for higher up the stack
 
@@ -93,7 +101,6 @@ Now when that host.com state changes it is broadcast:
 sup can also do a GUI popup if X is installed:
     ./sup.py host.com -p &
 
-
 #### sup can take configuration directives from an ini file.
 
 Config file location:
@@ -128,3 +135,52 @@ Example:
     ./sup.py google
     05.21.27 www.google.com:80 200 OK 5.664 ms
     05.21.29 www.google.com:80 200 OK 6.117 ms
+
+
+poller sections
+port = 80 #set all tcp polling to port 80 by default
+
+Example:
+    [tcp]
+    port = 80
+
+#### Flooding
+
+sup can flood as many requests as possible
+
+<pre><code>
+./sup.py l:80 -m http -f
+04.51.34 localhost:80 200 OK 1.188 ms
+04.51.34 localhost:80 200 OK 0.885 ms
+04.51.34 localhost:80 200 OK 1.144 ms
+...
+avg: 0.777363855422 Max: 1.762 Min: 0.601
+http polled 415 times in 0.0 seconds
+</code></pre>
+
+#### Specify Count
+
+sup allows you to specify a count of attempts (including with -f option)
+
+Limit count to 3 tcping's of localhost port 80 (.ini preference):
+
+<pre><code>
+./sup.py l -c 3
+04.53.18 localhost:80 ok 0.397 ms
+04.53.19 localhost:80 ok 0.463 ms
+04.53.20 localhost:80 ok 0.408 ms
+avg: 0.422666666667 Max: 0.463 Min: 0.397
+tcp polled 3 times in 3.0 seconds
+</code></pre>
+
+Limit count to 3 tcping's of localhost port 80 again with flood:
+
+<pre><code>
+./sup.py l -c 3 -f
+04.53.55 localhost:80 ok 0.347 ms
+04.53.55 localhost:80 ok 0.227 ms
+04.53.55 localhost:80 ok 0.207 ms
+avg: 0.260333333333 Max: 0.347 Min: 0.207
+tcp polled 3 times in 0.0 seconds
+rush@cair:~/git/github/chasemp/sup$ 
+</code></pre>
