@@ -1,1 +1,2 @@
-notifications don't work right w/ icmp
+* notifications don't work right w/ icmp
+* -f seems to throw off time clock

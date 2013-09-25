@@ -64,7 +64,7 @@ TCP Ping (default port is 22):
     02.10.33 host.com:22 ok 0.0 ms
     02.10.35 host.com:22 ok 0.0 ms
 
-TCP Ping non-defaul port:
+TCP Ping non-default port:
 
     sup host.com:80
 
