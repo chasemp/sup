@@ -10,73 +10,22 @@ import json
 import inspect
 import thread
 import os
-from addr import is_local
-from config import get_config_key
-from monitor import *
+from suplib import is_local
+from suplib import get_config_key
+from suplib import find_monitors
+from suplib import Timer
+from suplib import ftimeout
+from suplib import gui
+from suplib import popup
+from suplib import broadcast_msg
 
-try:
-    import Tkinter, tkMessageBox
-    gui = True
-except ImportError:
-    gui = False
-    pass
+#try:
+#    import Tkinter, tkMessageBox
+#    gui = True
+#except ImportError:
+#    gui = False
+#    pass
 
-def popup(msg):
-    root = Tkinter.Tk()
-    root.withdraw()
-    tkMessageBox.showinfo(sys.argv[0], str(msg))
-
-def runBash(cmd):
-    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-    out = p.stdout.read().strip()
-    return out
-
-def broadcast_msg(msg):
-    runBash('echo "%s" | wall' % str(msg))
-
-
-class Timer:
-    def __enter__(self):
-        self.start = time.clock()
-        return self
-
-    def __exit__(self, *args):
-        self.end = time.clock()
-        self.interval = self.end - self.start
-
-
-def ftimeout(func, args=(), kwargs={}, timeout_duration=1, default=None):
-    """http://stackoverflow.com/a/13821695"""
-    import signal
-
-    class TimeoutError(Exception):
-        pass
-
-    def handler(signum, frame):
-        raise TimeoutError()
-
-    # set the timeout handler
-    signal.signal(signal.SIGALRM, handler) 
-    signal.alarm(timeout_duration)
-    try:
-        result = func(*args, **kwargs)
-        to = False
-    except TimeoutError as exc:
-        to = True
-        result = default
-    finally:
-        signal.alarm(0)
-
-    return result, to
-
-
-def find_monitors(module):
-    import sys
-    sup_functions = {}
-    classes = inspect.getmembers(module, inspect.isclass)
-    for name, obj in classes:
-        sup_functions[name] = obj
-    return sup_functions
 
 def main():
 
@@ -87,8 +36,8 @@ def main():
             helpdie(str(e))
 
     poller = None
-    sup_dict = find_monitors(sys.modules[__name__])
-    parser = argparse.ArgumentParser(description='like ping but for protocols')
+    sup_dict = find_monitors()
+    parser = argparse.ArgumentParser(description='like ping but for higher up the stack')
     parser.add_argument("site",nargs=1, help='url or ip of site to manage')
     parser.add_argument("-p", help="show popups",  action="store_true")
     parser.add_argument("-b", help="broadcast messages",  action="store_true")

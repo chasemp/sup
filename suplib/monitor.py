@@ -1,4 +1,14 @@
 import time
+import sys
+import socket
+
+def find_monitors(module=sys.modules[__name__]):
+    import inspect
+    sup_functions = {}
+    classes = inspect.getmembers(module, inspect.isclass)
+    for name, obj in classes:
+        sup_functions[name] = obj
+    return sup_functions
 
 class Timer:
     def __enter__(self):
@@ -201,3 +211,6 @@ class sup_tcp(supped):
             return 'failed'
         finally:
             sock.close()
+
+if __name__ == '__main__':
+    print find_monitors()
