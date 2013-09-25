@@ -11,6 +11,18 @@ Tested on:
     Debian GNU/Linux 6.0.7
     OSX Darwin
 
+#### Installing (for now as setup.py is not yet ready):
+
+cd /opt
+git clone https://github.com/chasemp/sup.git
+ln -s /opt/sup/sup.py /usr/local/bin/sup
+
+    sup www.google.com -m http
+    01.14.38 www.google.com:80 200 OK 10.0 ms
+    01.14.39 www.google.com:80 200 OK 0.0 ms
+
+#### Usage
+
 <pre><code>
 like ping but for higher up the stack
 
@@ -37,7 +49,7 @@ optional arguments:
                redis
 </code></pre>
 
-#### Basic Usage for checking services/hosts
+####  Checking services/hosts
 
 TCP Ping (default port is 22):
 
