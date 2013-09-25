@@ -13,9 +13,13 @@ Tested on:
 
 #### Installing (for now as setup.py is not yet ready):
 
-cd /opt
-git clone https://github.com/chasemp/sup.git
-ln -s /opt/sup/sup.py /usr/local/bin/sup
+Do:
+
+    cd /opt
+    git clone https://github.com/chasemp/sup.git
+    ln -s /opt/sup/sup.py /usr/local/bin/sup
+
+Looks like:
 
     sup www.google.com -m http
     01.14.38 www.google.com:80 200 OK 10.0 ms
