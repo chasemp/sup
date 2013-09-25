@@ -1,7 +1,7 @@
 sup
 ===
 
-sup is a tool to be used like ping but with more protocol awareness.
+sup is a tool to be used like ping but for higher up the stack
 
 Tested on:
 
@@ -14,11 +14,11 @@ Tested on:
 <pre><code>
 like ping but for higher up the stack
 
-usage: sup.py [-h] [-p] [-b] [-v] [-f] [-vv] [-c COUNT] [-t TIMEOUT]
+usage: sup [-h] [-p] [-b] [-v] [-f] [-vv] [-c COUNT] [-t TIMEOUT]
               [-i INTERVAL] [-m MODE]
               site
 
-like ping but for protocols
+ping up the stack
 
 positional arguments:
   site         url or ip of site to manage
@@ -84,17 +84,17 @@ Hit 'Enter' to exit with stats at any time:
 
 'Pinging' memcached:
 
-    /sup.py 10.0.14.41 -m memcached
+    sup.py mchost.com -m memcached
 
-    02.13.34 10.0.14.41:11211 ok 10.0 ms
-    02.13.36 10.0.14.41:11211 ok 0.0 ms
-    02.13.38 10.0.14.41:11211 ok 0.0 ms
+    02.13.34 mchost.com:11211 ok 10.0 ms
+    02.13.36 mchost.com:11211 ok 0.0 ms
+    02.13.38 mchost.com:11211 ok 0.0 ms
 
 #### sup can notify you of state changes.
 
 Run sup tcping in background with 'broadcast' enabled:
 
-    ./sup.py host.com -b &
+    sup host.com -b &
     [1] 25420
 
 Now when that host.com state changes it is broadcast:
@@ -110,7 +110,7 @@ Now when that host.com state changes it is broadcast:
 
 sup can also do a GUI popup if X is installed:
 
-    ./sup.py host.com -p &
+    sup host.com -p &
 
 #### sup can take configuration directives from an ini file.
 
@@ -141,11 +141,11 @@ Example:
     google = www.google.com
     l = localhost
 
-    ./sup.py l
+    sup l
     05.06.58 localhost:22 failed 0.265 ms
     05.06.59 localhost:22 failed 0.792 ms
 
-    ./sup.py google
+    sup google
     05.21.27 www.google.com:80 200 OK 5.664 ms
     05.21.29 www.google.com:80 200 OK 6.117 ms
 
@@ -164,7 +164,7 @@ Example:
 sup can flood as many requests as possible
 
 <pre><code>
-./sup.py l:80 -m http -f
+sup l:80 -m http -f
 04.51.34 localhost:80 200 OK 1.188 ms
 04.51.34 localhost:80 200 OK 0.885 ms
 04.51.34 localhost:80 200 OK 1.144 ms
@@ -180,7 +180,7 @@ sup allows you to specify a count of attempts (including with -f option)
 Limit count to 3 tcping's of localhost port 80 (.ini preference):
 
 <pre><code>
-./sup.py l -c 3
+sup l -c 3
 04.53.18 localhost:80 ok 0.397 ms
 04.53.19 localhost:80 ok 0.463 ms
 04.53.20 localhost:80 ok 0.408 ms
@@ -191,11 +191,10 @@ tcp polled 3 times in 3.0 seconds
 Limit count to 3 tcping's of localhost port 80 again with flood:
 
 <pre><code>
-./sup.py l -c 3 -f
+sup l -c 3 -f
 04.53.55 localhost:80 ok 0.347 ms
 04.53.55 localhost:80 ok 0.227 ms
 04.53.55 localhost:80 ok 0.207 ms
 avg: 0.260333333333 Max: 0.347 Min: 0.207
 tcp polled 3 times in 0.0 seconds
-rush@cair:~/git/github/chasemp/sup$ 
 </code></pre>
