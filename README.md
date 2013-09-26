@@ -214,3 +214,6 @@ sup l -c 3 -f
 avg: 0.260333333333 Max: 0.347 Min: 0.207
 tcp polled 3 times in 0.0 seconds
 </code></pre>
+
+#### Reference
+[DevOps KC Presentation](http://chasemp.github.io/2013/09/26/sup-intro-devops-kc/)
