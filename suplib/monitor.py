@@ -53,10 +53,10 @@ class supped(object):
         self.timeout = timeout
         self.v = False
         self.vv = False
-        self.v_out = None
-        self.vv_out = None
 
     def run(self):
+        self.v_out = ''
+        self.vv_out = ''
         with Timer() as t:
             result, to = ftimeout(self.poll, timeout_duration=self.timeout)
         if to:
@@ -90,6 +90,46 @@ class sup_ntp(supped):
         t -= TIME1970
         return t
 
+class sup_ssl(supped):
+
+    def poll(self):
+        import socket, ssl, pprint
+        self.port = self.port or 443
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((self.ip, self.port))
+            sslSocket = socket.ssl(s)
+            if self.v:
+                issuer_details = sslSocket.issuer().replace('/', '\n')
+                server_details = sslSocket.server().replace('/', '\n')
+
+                self.v_out += issuer_details
+                self.v_out += server_details
+                print self.vv_out
+            #need to make this request w/ fqdn
+            #if self.v:
+            #    sslSocket.write("""GET / HTTP/1.0\r
+            #    Host: %s\r\n\r\n""" % self.ip)
+            #    self.vv_out +=  sslSocket.read()
+
+            if sslSocket.cipher():
+                status = "%s-%s-%s" % (sslSocket.cipher()[0], sslSocket.cipher()[1], sslSocket.cipher()[2])
+            else:
+                status = 'unavailable'
+            if self.vv:
+                self.vv_out += ssl.get_server_certificate(('74.125.225.85', 443))
+            return status
+
+        except socket.error, e:
+            if self.v or self.vv:
+                print 'socket error', e
+            return None
+        finally:
+            try:
+                s.close()
+            except:
+                pass
+
 
 class sup_http(supped):
 
@@ -105,7 +145,6 @@ class sup_http(supped):
             else:
                 status = 'unavailable'
             if self.vv:
-                self.vv_out = ''
                 self.vv_out += 'Connection details:'
                 for k, v in vars(request_result).iteritems():
                     if k != 'msg':
