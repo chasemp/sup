@@ -157,6 +157,9 @@ def main():
         if args.vv and s.vv_out is not None:
             print s.vv_out
             sys.stdout.write('>>> ')
+        if args.v and s.v_out is not None:
+            print s.v_out
+            sys.stdout.write('>>> ')
         host = s.ip
         if s.port:
             host += ':%s' % s.port
