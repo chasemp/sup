@@ -142,15 +142,11 @@ def main():
 
     while 1:
         if L or attempt == count and count != 0:
-            print 'avg: %s Max: %s Min: %s' % (sum(poll_durations)/len(poll_durations),
-                                               max(poll_durations),
-                                               min(poll_durations))
-            print '%s polled %s times in %s seconds' % (args.mode, attempt, round(time.time() - begin))
             break
 
         attempt += 1
-        localtime   = time.localtime()
-        now  = time.strftime("%I.%M.%S", localtime)
+        localtime = time.localtime()
+        now = time.strftime("%I.%M.%S", localtime)
         lstate = state or ''
         state, howlong = s.run()
         poll_durations.append(howlong)
@@ -178,7 +174,15 @@ def main():
         if args.v or args.vv:
             print '---------------------------------------------------'
         if not args.f:
-            time.sleep(interval)
+            try:
+                time.sleep(interval)
+            except:
+                return
+
+    print 'avg: %s Max: %s Min: %s' % (sum(poll_durations)/len(poll_durations),
+                                               max(poll_durations),
+                                               min(poll_durations))
+    print '%s polled %s times in %s seconds' % (args.mode, attempt, round(time.time() - begin, 4))
 
 if __name__ == '__main__':
     try:
