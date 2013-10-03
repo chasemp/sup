@@ -92,6 +92,7 @@ class sup_ntp(supped):
 
 class sup_ssl(supped):
 
+    #notes: http://stackoverflow.com/questions/1087227/validate-ssl-certificates-with-python
     def poll(self):
         import socket, ssl, pprint
         self.port = self.port or 443
@@ -106,17 +107,12 @@ class sup_ssl(supped):
                 self.v_out += issuer_details
                 self.v_out += server_details
                 print self.vv_out
-            #need to make this request w/ fqdn
-            #if self.v:
-            #    sslSocket.write("""GET / HTTP/1.0\r
-            #    Host: %s\r\n\r\n""" % self.ip)
-            #    self.vv_out +=  sslSocket.read()
-
             if sslSocket.cipher():
                 status = "%s-%s-%s" % (sslSocket.cipher()[0], sslSocket.cipher()[1], sslSocket.cipher()[2])
             else:
                 status = 'unavailable'
             if self.vv:
+                self.vv_out += 'remote pem certificate\n'
                 self.vv_out += ssl.get_server_certificate(('74.125.225.85', 443))
             return status
 
