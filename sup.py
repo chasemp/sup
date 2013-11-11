@@ -151,7 +151,10 @@ def main():
         host = s.ip
         if s.port:
             host += ':%s' % s.port
+
+        #Like: 01.15.18 www.deviantart.com:80 200 OK 2.692 ms
         msg = '%s %s %s %s ms' %  (now, host, state, howlong)
+
         if s.v or s.vv:
             msg += ' %s' % attempt
         if state and lstate and state != lstate:
@@ -162,10 +165,13 @@ def main():
         elif state and not lstate:
             if args.v:
                 print 'unknown last state'
+
+        #primary status output
         print msg
+
         if args.v or args.vv:
             print '---------------------------------------------------'
-        if not args.f:
+        if not args.f or not attempt != 1:
             try:
                 time.sleep(interval)
             #prevents some edgecase exceptions being raised
