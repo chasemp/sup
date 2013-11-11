@@ -1,20 +1,12 @@
 #!/usr/bin/env python
 import argparse
 import sys
-import httplib
-import datetime
-import subprocess
 import time
 import socket
-import json
-import inspect
 import thread
-import os
 from suplib import is_local
 from suplib import get_config_key
 from suplib import find_monitors
-from suplib import Timer
-from suplib import ftimeout
 from suplib import gui
 from suplib import popup
 from suplib import broadcast_msg
@@ -176,6 +168,8 @@ def main():
         if not args.f:
             try:
                 time.sleep(interval)
+            #prevents some edgecase exceptions being raised
+            #for cntrl+c in sleep cycle.
             except:
                 return
 

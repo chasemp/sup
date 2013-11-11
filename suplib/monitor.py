@@ -1,3 +1,4 @@
+import ports
 import time
 import sys
 import socket
@@ -71,7 +72,7 @@ class supped(object):
 class sup_ntp(supped):
 
     def poll(self):
-        self.port = self.port or 123
+        self.port = self.port or ports.ntp
         # File: Ntpclient.py
         #http://stackoverflow.com/questions/12664295/ntp-client-in-python
         from socket import AF_INET, SOCK_DGRAM
@@ -94,8 +95,8 @@ class sup_ssl(supped):
 
     #notes: http://stackoverflow.com/questions/1087227/validate-ssl-certificates-with-python
     def poll(self):
-        import socket, ssl, pprint
-        self.port = self.port or 443
+        import socket, ssl
+        self.port = self.port or ports.ssl
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((self.ip, self.port))
@@ -131,7 +132,7 @@ class sup_http(supped):
 
     def poll(self):
         import httplib
-        self.port = self.port or 80
+        self.port = self.port or ports.http
         try:
             conn = httplib.HTTPConnection(self.ip, self.port)
             conn.request("HEAD", "/")
@@ -158,7 +159,7 @@ class sup_http(supped):
 class sup_smtp(supped):
 
     def poll(self):
-        self.port = self.port or 25
+        self.port = self.port or ports.smtp
         import socket
         try:
             mark = 'ESMTP'
@@ -179,7 +180,7 @@ class sup_redis(supped):
 
     def poll(self):
         import telnetlib
-        self.port = self.port or 6379
+        self.port = self.port or ports.redis
         mark = 'PONG'
         try:
             tn = telnetlib.Telnet(self.ip, self.port)
@@ -200,7 +201,7 @@ class sup_memcached(supped):
 
     def poll(self):
         import telnetlib
-        self.port = self.port or 11211
+        self.port = self.port or ports.memcached
         mark = 'accepting_conns 1'
         try:
             tn = telnetlib.Telnet(self.ip, self.port)
@@ -232,7 +233,7 @@ class sup_icmp(supped):
 class sup_tcp(supped):
 
     def poll(self):
-        self.port = self.port or 22
+        self.port = self.port or ports.ssh
         import socket
         try:
             sock = socket.socket()

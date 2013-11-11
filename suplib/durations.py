@@ -1,8 +1,7 @@
 import os
-import sys
 import time
 
-class Timer:
+class Timer(object):
     def __enter__(self):
         self.start = time.clock()
         return self
@@ -28,7 +27,7 @@ def ftimeout(func, args=(), kwargs={}, timeout_duration=1, default=None):
     try:
         result = func(*args, **kwargs)
         to = False
-    except TimeoutError as exc:
+    except TimeoutError:
         to = True
         result = default
     finally:

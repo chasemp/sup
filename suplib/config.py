@@ -1,6 +1,4 @@
 import os
-import struct
-import socket
 import ConfigParser
 
 home = os.path.expanduser('~')
