@@ -2,7 +2,9 @@ import ports
 import time
 import sys
 import socket
-from . import sysexits
+import sysexits
+from color import bcolors
+
 
 def find_monitors(module=sys.modules[__name__]):
     import inspect
@@ -11,6 +13,7 @@ def find_monitors(module=sys.modules[__name__]):
     for name, obj in classes:
         sup_functions[name] = obj
     return sup_functions
+
 
 class Timer:
     def __enter__(self):
@@ -59,7 +62,7 @@ class supped(object):
         try:
             return socket.gethostbyname(site)
         except:
-            sys.stderr.write('could not translate hostname\n')
+            sys.stderr.write('>> could not translate hostname\n')
             sys.exit(1)
 
     def run(self):
@@ -70,7 +73,14 @@ class supped(object):
         if to:
             result = 'timeout'
         ms = t.interval * 1000
-        return result,  ms
+
+        if result[0] == 0:
+          status = bcolors.OKGREEN + result[1] + bcolors.ENDC
+        elif result == 'timeout':
+          status = bcolors.WARNING + result + bcolors.ENDC
+        else:
+          status = bcolors.FAIL + result[1] + bcolors.ENDC
+        return status,  ms
 
     def poll(self):
         raise NotImplementedError("Subclasses should implement this!")
@@ -88,9 +98,9 @@ class sup_ssh(supped):
         self.vv_out += cmd
         retcode = sp.call(cmd, shell=True)
         if retcode == 0:
-            return 'OK'
+            return 0, 'OK'
         else:
-            return codes[retcode]
+            return retcode, codes[retcode]
 
 class sup_ntp(supped):
 
@@ -112,7 +122,7 @@ class sup_ntp(supped):
         msg, address = client.recvfrom( buf )
         t = struct.unpack( "!12I", msg)[10]
         t -= TIME1970
-        return t
+        return 0, t
 
 class sup_https(supped):
 
@@ -137,12 +147,12 @@ class sup_https(supped):
             if self.vv:
                 self.vv_out += 'remote pem certificate\n'
                 self.vv_out += ssl.get_server_certificate(('74.125.225.85', 443))
-            return status
+            return 0, status
 
         except socket.error, e:
             if self.v or self.vv:
                 print 'socket error', e
-            return None
+            return 1, e
         finally:
             try:
                 s.close()
@@ -172,11 +182,13 @@ class sup_http(supped):
                         self.vv_out += 'Message details:\n'
                         for output in str(v).splitlines():
                             self.vv_out += '        %s\n' % output
-            return status
+            return 0, 'OK'
         except socket.error, e:
             if self.v or self.vv:
                 print 'socket error', e
-            return None
+            return 1, str(e)
+        except:
+            return 1, 'Error'
 
 class sup_smtp(supped):
 
@@ -189,12 +201,10 @@ class sup_smtp(supped):
             sock.connect((self.resolve(self.site), self.port))
             data = sock.recv(2048)
             if mark in data:
-                status = 'OK'
-            else:
-                status = 'failed'
-            return status
+                return 0, 'OK'
+            return 1, 'failed'
         except socket.error:
-            return None
+            return 1, 'Error'
         finally:
             sock.close()
 
@@ -212,10 +222,8 @@ class sup_redis(supped):
             tn.write("QUIT\r\n")  # this is where i enter my username
             data = tn.read_all()
             if mark in data:
-                status = mark
-            else:
-                status = 'failed'
-            return status
+                return 0, mark
+            return 1, 'Failed'
         except socket.error:
             return None
 
@@ -232,12 +240,10 @@ class sup_memcached(supped):
             tn.write("quit\r\n")
             data =  tn.read_all()
             if mark in data:
-                status = 'OK'
-            else:
-                status = 'failed'
-            return status
+                return 0, 'OK'
+            return 1, 'Failed'
         except socket.error:
-            return None
+            return 1, 'Error'
 
 
 class sup_icmp(supped):
@@ -247,9 +253,9 @@ class sup_icmp(supped):
         import socket
         try:
             p = Ping(self.resolve(self.site), 1, 55)
-            return p.do()
+            return 0, p.do()
         except socket.error:
-            print 'need superuser priviledges'
+            print 1, 'Need Superuser Priviledges'
 
 
 class sup_tcp(supped):
@@ -261,12 +267,10 @@ class sup_tcp(supped):
             sock = socket.socket()
             sock.connect((self.resolve(self.site), self.port))
             if isinstance(sock, socket._socketobject):
-                status = 'OK'
-            else:
-                status = 'failed'
-            return status
+                return 0, 'OK'
+            return 'Failed'
         except socket.error:
-            return 'failed'
+            return 1, 'Error'
         finally:
             sock.close()
 
