@@ -19,7 +19,7 @@ Do:
     git clone https://github.com/chasemp/sup.git
     ln -s /opt/sup/sup.py /usr/local/bin/sup
 
-Looks like:
+LoOKs like:
 
     sup www.google.com -m http
     01.14.38 www.google.com:80 200 OK 10.0 ms
@@ -50,7 +50,7 @@ optional arguments:
   -t TIMEOUT   main timeout
   -i INTERVAL  interval between polls
   -m MODE      Check type to use. Available: tcp http smtp ntp memcached icmp
-               redis
+               redis https ssh
 </code></pre>
 
 ####  Checking services/hosts
@@ -59,19 +59,17 @@ TCP Ping (default port is 22):
 
     sup host.com
 
-    02.10.29 host.com:22 ok 0.0 ms
-    02.10.31 host.com:22 ok 0.0 ms
-    02.10.33 host.com:22 ok 0.0 ms
-    02.10.35 host.com:22 ok 0.0 ms
+    02.10.29 host.com:22 OK 0.0 ms
+    02.10.31 host.com:22 OK 0.0 ms
+    02.10.33 host.com:22 OK 0.0 ms
 
 TCP Ping non-default port:
 
     sup host.com:80
 
-    02.10.29 host.com:80 ok 0.0 ms
-    02.10.31 host.com:80 ok 0.0 ms
-    02.10.33 host.com:80 ok 0.0 ms
-    02.10.35 host.com:80 ok 0.0 ms
+    02.10.29 host.com:80 OK 0.0 ms
+    02.10.31 host.com:80 OK 0.0 ms
+    02.10.33 host.com:80 OK 0.0 ms
 
 Hit 'Enter' to exit with stats at any time:
 
@@ -82,29 +80,25 @@ Hit 'Enter' to exit with stats at any time:
 
     * tcp
     * http
+    * https
     * smtp
     * ntp
     * memcached
     * icmp
     * redis
+    * ssh
 
 'Pinging' Redis:
 
     sup redis01 -m redis
 
     02.12.39 redis01:6379 PONG 10.0 ms
-    02.12.41 redis01:6379 PONG 0.0 ms
-
-    avg: 5.0 Max: 10.0 Min: 0.0
-    redis polled 2 times in 4.0 seconds
 
 'Pinging' memcached:
 
     sup.py mchost.com -m memcached
 
-    02.13.34 mchost.com:11211 ok 10.0 ms
-    02.13.36 mchost.com:11211 ok 0.0 ms
-    02.13.38 mchost.com:11211 ok 0.0 ms
+    02.13.34 mchost.com:11211 OK 10.0 ms
 
 #### sup can notify you of state changes.
 
@@ -115,10 +109,9 @@ Run sup tcping in background with 'broadcast' enabled:
 
 Now when that host.com state changes it is broadcast:
 
-    02.14.46 host.com:22 ok 0.0 ms
-    02.14.48 host.com:22 ok 0.0 ms
-    02.14.50 host.com:22 ok 0.0 ms
-    02.14.52 host.com:22 ok 0.0 ms
+    02.14.48 host.com:22 OK 0.0 ms
+    02.14.50 host.com:22 OK 0.0 ms
+    02.14.52 host.com:22 OK 0.0 ms
     Broadcast Message from root@idle34                                             
             (/dev/pts/0) at 14:14 ...                                              
                                                                                
@@ -197,9 +190,9 @@ Limit count to 3 tcping's of localhost port 80 (.ini preference):
 
 <pre><code>
 sup l -c 3
-04.53.18 localhost:80 ok 0.397 ms
-04.53.19 localhost:80 ok 0.463 ms
-04.53.20 localhost:80 ok 0.408 ms
+04.53.18 localhost:80 OK 0.397 ms
+04.53.19 localhost:80 OK 0.463 ms
+04.53.20 localhost:80 OK 0.408 ms
 avg: 0.422666666667 Max: 0.463 Min: 0.397
 tcp polled 3 times in 3.0 seconds
 </code></pre>
@@ -208,9 +201,9 @@ Limit count to 3 tcping's of localhost port 80 again with flood:
 
 <pre><code>
 sup l -c 3 -f
-04.53.55 localhost:80 ok 0.347 ms
-04.53.55 localhost:80 ok 0.227 ms
-04.53.55 localhost:80 ok 0.207 ms
+04.53.55 localhost:80 OK 0.347 ms
+04.53.55 localhost:80 OK 0.227 ms
+04.53.55 localhost:80 OK 0.207 ms
 avg: 0.260333333333 Max: 0.347 Min: 0.207
 tcp polled 3 times in 0.0 seconds
 </code></pre>
