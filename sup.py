@@ -76,28 +76,28 @@ def main():
             print 'translating %s => %s' % (site, sub)
         site = sub
 
-    try:
-        ip = socket.gethostbyname(site)
-    except:
-        helpdie('could not translate hostname')
+    #try:
+    #    ip = socket.gethostbyname(site)
+    #except:
+    #    helpdie('could not translate hostname')
 
     #check for user polling preferrences for local and remote hosts
-    if is_local(ip, args.mode) and args.mode == poller:
-        if args.vv:
-          print 'local host found'
-        lpreferred = get_config_key(args.mode, 'localmon')
-        if lpreferred:
-            args.mode = lpreferred
-            if args.vv:
-                print 'mode changed to %s' % (args.mode)
-    else:
-        if args.vv:
-            print 'remote host found'
-        rpreferred = get_config_key(args.mode, 'remotemon')
-        if rpreferred and args.mode == poller:
-            args.mode = rpreferred
-            if args.vv:
-                print 'mode changed to %s' % (args.mode)
+    #if is_local(ip, args.mode) and args.mode == poller:
+    #    if args.vv:
+    #      print 'local host found'
+    #    lpreferred = get_config_key(args.mode, 'localmon')
+    #    if lpreferred:
+    #        args.mode = lpreferred
+    #        if args.vv:
+    #            print 'mode changed to %s' % (args.mode)
+    #else:
+    #    if args.vv:
+    #        print 'remote host found'
+    #    rpreferred = get_config_key(args.mode, 'remotemon')
+    #    if rpreferred and args.mode == poller:
+    #        args.mode = rpreferred
+    #        if args.vv:
+    #            print 'mode changed to %s' % (args.mode)
 
     if not explicitport:
         port = get_config_key(args.mode, 'port') or port
@@ -105,7 +105,7 @@ def main():
 
     if gui == False and args.p:
         print 'popups enabled but no GUI -- disabling'
-        args.p = False
+     	args.p = False
 
     final_poller = args.mode or 'tcp'
     mode = "sup_%s" % final_poller
@@ -118,8 +118,7 @@ def main():
     else:
         helpdie()
 
-    #Listen for user signals while 
-    #polling
+    #Listen for user signals while polling
     def input_thread(L):
         raw_input()
         L.append(None)
@@ -148,7 +147,7 @@ def main():
         if args.v and s.v_out is not None:
             print s.v_out
             sys.stdout.write('>>> ')
-        host = s.ip
+        host = s.site
         if s.port:
             host += ':%s' % s.port
 

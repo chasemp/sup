@@ -2,6 +2,7 @@ import ports
 import time
 import sys
 import socket
+from . import sysexits
 
 def find_monitors(module=sys.modules[__name__]):
     import inspect
@@ -42,18 +43,24 @@ def ftimeout(func, args=(), kwargs={}, timeout_duration=1, default=None):
         result = default
     finally:
         signal.alarm(0)
-
     return result, to
 
 
 class supped(object):
 
-    def __init__(self, ip, port, timeout):
-        self.ip = ip
+    def __init__(self, site, port, timeout):
+        self.site = site
         self.port = port
         self.timeout = timeout
         self.v = False
         self.vv = False
+
+    def resolve(self, site):
+        try:
+            return socket.gethostbyname(site)
+        except:
+            sys.stderr.write('could not translate hostname\n')
+            sys.exit(1)
 
     def run(self):
         self.v_out = ''
@@ -69,6 +76,22 @@ class supped(object):
         raise NotImplementedError("Subclasses should implement this!")
 
 
+class sup_ssh(supped):
+
+    def poll(self):
+        import subprocess as sp
+        from sysexits import codes
+        self.timeout = 5
+        self.port = self.port or ports.ssh
+
+        cmd = "/usr/bin/ssh -p %s -F ~/.ssh/config -q %s exit" % (self.port, self.site,)
+        self.vv_out += cmd
+        retcode = sp.call(cmd, shell=True)
+        if retcode == 0:
+            return 'OK'
+        else:
+            return codes[retcode]
+
 class sup_ntp(supped):
 
     def poll(self):
@@ -81,7 +104,7 @@ class sup_ntp(supped):
         import struct, time
         from time import ctime
         buf = 1024
-        address = (self.ip, self.port)
+        address = (self.resolve(self.site), self.port)
         msg = '\x1b' + 47 * '\0'
         TIME1970 = 2208988800L # 1970-01-01 00:00:00
         client = socket.socket( AF_INET, SOCK_DGRAM)
@@ -91,7 +114,7 @@ class sup_ntp(supped):
         t -= TIME1970
         return t
 
-class sup_ssl(supped):
+class sup_https(supped):
 
     #notes: http://stackoverflow.com/questions/1087227/validate-ssl-certificates-with-python
     def poll(self):
@@ -99,7 +122,7 @@ class sup_ssl(supped):
         self.port = self.port or ports.ssl
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((self.ip, self.port))
+            s.connect((self.resolve(self.site), self.port))
             sslSocket = socket.ssl(s)
             if self.v:
                 issuer_details = sslSocket.issuer().replace('/', '\n')
@@ -107,7 +130,6 @@ class sup_ssl(supped):
 
                 self.v_out += issuer_details
                 self.v_out += server_details
-                print self.vv_out
             if sslSocket.cipher():
                 status = "%s-%s-%s" % (sslSocket.cipher()[0], sslSocket.cipher()[1], sslSocket.cipher()[2])
             else:
@@ -134,7 +156,7 @@ class sup_http(supped):
         import httplib
         self.port = self.port or ports.http
         try:
-            conn = httplib.HTTPConnection(self.ip, self.port)
+            conn = httplib.HTTPConnection(self.resolve(self.site), self.port)
             conn.request("HEAD", "/")
             request_result = conn.getresponse()
             if request_result:
@@ -164,10 +186,10 @@ class sup_smtp(supped):
         try:
             mark = 'ESMTP'
             sock = socket.socket()
-            sock.connect((self.ip, self.port))
+            sock.connect((self.resolve(self.site), self.port))
             data = sock.recv(2048)
             if mark in data:
-                status = 'ok'
+                status = 'OK'
             else:
                 status = 'failed'
             return status
@@ -183,7 +205,7 @@ class sup_redis(supped):
         self.port = self.port or ports.redis
         mark = 'PONG'
         try:
-            tn = telnetlib.Telnet(self.ip, self.port)
+            tn = telnetlib.Telnet(self.resolve(self.site), self.port)
             tn.read_very_eager()
             tn.write("PING\r\n")
             tn.write("info\r\n")
@@ -204,13 +226,13 @@ class sup_memcached(supped):
         self.port = self.port or ports.memcached
         mark = 'accepting_conns 1'
         try:
-            tn = telnetlib.Telnet(self.ip, self.port)
+            tn = telnetlib.Telnet(self.resolve(self.site), self.port)
             tn.read_very_eager()
             tn.write("stats\r\n")
             tn.write("quit\r\n")
             data =  tn.read_all()
             if mark in data:
-                status = 'ok'
+                status = 'OK'
             else:
                 status = 'failed'
             return status
@@ -224,7 +246,7 @@ class sup_icmp(supped):
         from ping import Ping
         import socket
         try:
-            p = Ping(self.ip, 1, 55)
+            p = Ping(self.resolve(self.site), 1, 55)
             return p.do()
         except socket.error:
             print 'need superuser priviledges'
@@ -237,9 +259,9 @@ class sup_tcp(supped):
         import socket
         try:
             sock = socket.socket()
-            sock.connect((self.ip, self.port))
+            sock.connect((self.resolve(self.site), self.port))
             if isinstance(sock, socket._socketobject):
-                status = 'ok'
+                status = 'OK'
             else:
                 status = 'failed'
             return status
